@@ -12,6 +12,7 @@ class NginxConfig
     basic_auth: false,
     basic_auth_htpasswd_path: "/app/.htpasswd",
     worker_connections: 512,
+    headers: [],
     resolver: "8.8.8.8",
     logging: {
       "access" => true,
@@ -41,6 +42,7 @@ class NginxConfig
       cleaned_path.chop! if cleaned_path.end_with?("/")
       json["proxies"][loc]["path"] = cleaned_path
       json["proxies"][loc]["host"] = uri.dup.tap {|u| u.path = '' }.to_s
+      json["proxies"][loc]["headers"] = hash["headers"] || DEFAULT[:headers]
       %w(http https).each do |scheme|
         json["proxies"][loc]["redirect_#{scheme}"] = uri.dup.tap {|u| u.scheme = scheme }.to_s
         json["proxies"][loc]["redirect_#{scheme}"] += "/" if !uri.to_s.end_with?("/")
